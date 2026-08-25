@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import emailRoutes from "./routes/email.routes";
+import authRoutes from "./routes/auth.routes";
 
 const app = express();
 
@@ -11,5 +13,8 @@ app.get("/", (_req, res) => {
         message: "Notification & Email API is running",
     });
 });
+
+app.use("/api/emails", emailRoutes);
+app.use("/api/auth", authRoutes);
 
 export default app;
