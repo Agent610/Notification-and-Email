@@ -1,16 +1,10 @@
 import {Request, Response} from "express";
 import jwt from "jsonwebtoken";
-import { createUser } from "../services/user.service";
+import { createUser, verifyPassword } from "../services/user.service";
 
 export const register = async (req: Request, res: Response) => {
     try {
-        const {email, password} = req.body ?? {};
-
-        if (!email || !password) {
-            return res.status(400).json({
-                message: "Email and password are required",
-            });
-        }
+        const {email, password} = req.body;
 
         const user = await createUser(email,password);
 
@@ -34,11 +28,21 @@ export const login = async (req: Request, res: Response) => {
     try {
         const {email, password} = req.body ?? {};
 
-        if (!email || !password) {
-           return res.status(400).json({
-            message: "Email and password are required",
-           }); 
-        }
+       const exampleHashedPassword = await createUser(
+        email, 
+        password
+       );
+
+       const passwordIsValid = await verifyPassword(
+        password, 
+        exampleHashedPassword.password
+       );
+
+       if (!passwordIsValid) {
+        return res.status(401).json({
+            message: "Invalid email or password",
+        });
+       }
 
         const token = jwt.sign(
             {email}, 

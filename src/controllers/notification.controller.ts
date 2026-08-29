@@ -1,13 +1,24 @@
 import {Request, Response} from "express";
 import { createNotification, getUserNotifications, markNotificationAsRead } from "../services/notification.service";
+import { AuthenticatedRequest } from "../middleware/auth.middleware";
 
-export const create = async (req: Request, res: Response) => {
+export const create = async (
+    req: AuthenticatedRequest, res: Response
+) => {
     try {
-        const {userId, title, message, type} = req.body ?? {};
+        const {title, message, type} = req.body ?? {};
 
-        if (!userId || !title || !message) {
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: "Authenticated user not found",
+            });
+        }
+
+        if (!title || !message) {
             return res.status(400).json({
-                message: "userId, title, and message are required",
+                message: "Title and message are required",
             });
         }
 
