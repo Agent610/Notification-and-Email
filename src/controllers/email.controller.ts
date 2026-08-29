@@ -5,12 +5,6 @@ export const sendEmail = async (req: Request, res: Response) => {
     try {
         const {recipient, subject, message} = req.body;
 
-        if(!recipient || !subject || !message) {
-            return res.status(400).json({
-                message: "Recipient, subject, and message are required",
-            });
-        }
-
         const email = await sendEmailService({
             recipient,
             subject,
@@ -18,7 +12,7 @@ export const sendEmail = async (req: Request, res: Response) => {
         });
 
         return res.status(200).json({
-            message: "Email request received",
+            message: "Email sent successfully",
             email,
             });
     } catch (error) {
