@@ -10,12 +10,23 @@ export interface Notification {
 
 const notifications: Notification[] = [];
 
+const notificationTypes = [
+    "info",
+    "success",
+    "warning",
+    "error",
+] 
+
 export const createNotification = async (
     userId: string, 
     title: string,
     message: string,
     type: Notification["type"] = "info"
 ): Promise<Notification> => {
+    if(!notificationTypes.includes(type)) {
+        throw new Error("Invalid notification type");
+    }
+    
     const notification: Notification = {
         id: crypto.randomUUID(),
         userId,
@@ -40,10 +51,13 @@ export const getUserNotifications = async (
 };
 
 export const markNotificationAsRead = async (
-    notificationId: string
+    notificationId: string,
+    userId: string
 ): Promise<Notification | null> => {
     const notification = notifications.find(
-        (notification) => notification.id === notificationId
+        (notification) => 
+            notification.id === notificationId &&
+        notification.userId === userId
     );
 
     if (!notification) {

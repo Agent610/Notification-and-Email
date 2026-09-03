@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
 import { sendEmailService } from "../services/email.service";
 
-export const sendEmail = async (req: Request, res: Response) => {
+export const sendEmail = async (
+    req: Request, 
+    res: Response
+) => {
     try {
         const {recipient, subject, message} = req.body;
 
-        const email = await sendEmailService({
+        await sendEmailService({
             recipient,
             subject,
             message,
@@ -13,13 +16,12 @@ export const sendEmail = async (req: Request, res: Response) => {
 
         return res.status(200).json({
             message: "Email sent successfully",
-            email,
             });
     } catch (error) {
         console.error(error);
 
         return res.status(500).json({
-            message: "Internal server error",
+            message: "Failed to send email",
         });
     }
 };

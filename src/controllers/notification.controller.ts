@@ -42,13 +42,16 @@ export const create = async (
     }
 }
 
-export const getNotifications = async (req: Request, res: Response) => {
+export const getNotifications = async (
+    req: AuthenticatedRequest, 
+    res: Response
+) => {
   try {
-    const { userId } = req.params;
+    const userId = req.user?.id;
 
-    if(typeof userId !== "string") {
-        return res.status(400).json({
-            message: "Invalid userId",
+    if(!userId) {
+        return res.status(401).json({
+            message: "Authenticated user not found",
         });
     }
 
@@ -66,9 +69,19 @@ export const getNotifications = async (req: Request, res: Response) => {
   }
 };
 
-export const markAsRead = async (req: Request, res: Response) => {
+export const markAsRead = async (
+    req: AuthenticatedRequest, 
+    res: Response
+) => {
     try {
         const {notificationId} = req.params;
+        const userId = req.user?.id;
+
+        if(!userId) {
+            return res.status(401).json({
+                message: "Authenticated user not found",
+            });
+        }
 
         if (typeof notificationId !== "string") {
             return res.status(400).json({
@@ -76,13 +89,17 @@ export const markAsRead = async (req: Request, res: Response) => {
             });
         }
         
-        const notification = await markNotificationAsRead(notificationId);
+        const notification = await markNotificationAsRead(
+            notificationId,
+            userId
+        );
 
         if (!notification) {
             return res.status(404).json({
                 message: "Notification not found",
             });
         }
+
 
         return res.status(200).json({
             message: "Notification marked as read",

@@ -5,7 +5,7 @@ import { authenticate } from "../middleware/auth.middleware";
 const router = Router();
 
 router.post("/", authenticate, create);
-router.get("/user/:userId", authenticate, getNotifications);
+router.get("/", authenticate, getNotifications);
 router.patch("/:notificationId/read", authenticate, markAsRead);
 
 export default router;

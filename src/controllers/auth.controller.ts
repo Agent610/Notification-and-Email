@@ -1,10 +1,21 @@
 import {Request, Response} from "express";
 import jwt from "jsonwebtoken";
-import { createUser, verifyPassword } from "../services/user.service";
+import { createUser, findUserByEmail, verifyPassword } from "../services/user.service";
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (
+    req: Request, 
+    res: Response
+) => {
     try {
         const {email, password} = req.body;
+
+        const existingUser = await findUserByEmail(email);
+
+        if(existingUser) {
+            return res.status(409).json({
+                message: "User already exists",
+            });
+        }
 
         const user = await createUser(email,password);
 
@@ -24,18 +35,24 @@ export const register = async (req: Request, res: Response) => {
     }   
 }
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (
+    req: Request, 
+    res: Response
+) => {
     try {
-        const {email, password} = req.body ?? {};
+        const {email, password} = req.body;
 
-       const exampleHashedPassword = await createUser(
-        email, 
-        password
-       );
+        const user = await findUserByEmail(email);
+
+        if(!user) {
+            return res.status(401).json({
+                message: "Invalid email or password",
+            });
+        }
 
        const passwordIsValid = await verifyPassword(
         password, 
-        exampleHashedPassword.password
+        user.password
        );
 
        if (!passwordIsValid) {
@@ -45,9 +62,14 @@ export const login = async (req: Request, res: Response) => {
        }
 
         const token = jwt.sign(
-            {email}, 
+            {
+                id: user.id,
+                email: user.email,
+            }, 
             process.env.JWT_SECRET as string,
-            {expiresIn: "1h"}
+            {
+                expiresIn: "1h",
+            }
         );
 
         return res.status(200).json({
