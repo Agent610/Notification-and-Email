@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.routes";
 import notificationRoutes from "./routes/notification.routes";
 import { errorHandler } from "./middleware/error.middleware";
 import { notFoundHandler } from "./middleware/not-found.middleware";
+import userRoutes from "./routes/user.routes";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get("/", (_req, res) => {
 app.use("/api/emails", emailRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/users", userRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
