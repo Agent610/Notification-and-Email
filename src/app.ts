@@ -3,9 +3,10 @@ import cors from "cors";
 import emailRoutes from "./routes/email.routes";
 import authRoutes from "./routes/auth.routes";
 import notificationRoutes from "./routes/notification.routes";
+import userRoutes from "./routes/user.routes";
+import notificationPreferenceRoute from "./routes/notification-preference.routes";
 import { errorHandler } from "./middleware/error.middleware";
 import { notFoundHandler } from "./middleware/not-found.middleware";
-import userRoutes from "./routes/user.routes";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use("/api/emails", emailRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/notification-preferences", notificationPreferenceRoute);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

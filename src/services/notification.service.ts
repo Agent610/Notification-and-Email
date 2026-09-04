@@ -1,70 +1,45 @@
-export interface Notification {
-    id: string;
-    userId: string;
-    title: string;
-    message: string;
-    type: "info" | "success" | "warning" | "error";
-    read: boolean;
-    createdAt: Date;
-}
-
-const notifications: Notification[] = [];
-
-const notificationTypes = [
-    "info",
-    "success",
-    "warning",
-    "error",
-] 
+import { Types } from "mongoose";
+import NotificationModel from "../models/Notification";
 
 export const createNotification = async (
-    userId: string, 
+    userId: string,
     title: string,
     message: string,
-    type: Notification["type"] = "info"
-): Promise<Notification> => {
-    if(!notificationTypes.includes(type)) {
-        throw new Error("Invalid notification type");
-    }
-    
-    const notification: Notification = {
-        id: crypto.randomUUID(),
-        userId,
+    type: "info" | "success" | "warning" | "error" = "info"
+) => {
+    const notification = await NotificationModel.create({
+        userId: new Types.ObjectId(userId),
         title,
         message,
         type,
         read: false,
-        createdAt: new Date(),
-    };
-
-    notifications.push(notification);
+    });
 
     return notification;
 };
 
 export const getUserNotifications = async (
     userId: string
-): Promise<Notification[]> => {
-    return notifications.filter(
-        (notification) => notification.userId === userId
-    );
+) => {
+    return NotificationModel.find({
+        userId: new Types.ObjectId(userId),
+    }).sort({ createdAt: -1 });
 };
 
 export const markNotificationAsRead = async (
     notificationId: string,
     userId: string
-): Promise<Notification | null> => {
-    const notification = notifications.find(
-        (notification) => 
-            notification.id === notificationId &&
-        notification.userId === userId
+) => {
+    return NotificationModel.findOneAndUpdate(
+        {
+            _id: new Types.ObjectId(notificationId),
+            userId: new Types.ObjectId(userId),
+        },
+        {
+            read: true,
+        },
+        {
+            new: true,
+        }
     );
-
-    if (!notification) {
-        return null;
-    }
-
-    notification.read = true;
-
-    return notification;
-}
+};
