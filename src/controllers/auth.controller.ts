@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import jwt from "jsonwebtoken";
+import { generateToken } from "../utils/generateToken";
 import { createUser, findUserByEmail, verifyPassword } from "../services/user.service";
 
 export const register = async (
@@ -61,16 +61,10 @@ export const login = async (
         });
        }
 
-        const token = jwt.sign(
-            {
-                id: user.id,
-                email: user.email,
-            }, 
-            process.env.JWT_SECRET as string,
-            {
-                expiresIn: "1h",
-            }
-        );
+        const token = generateToken({
+            id: user.id,
+            email: user.email,
+        });
 
         return res.status(200).json({
             message: "Login successful",
