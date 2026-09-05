@@ -92,3 +92,34 @@ export const validateNotificationRequest = (
 
     next();
 };
+
+export const validateNotificationPreferenceRequest = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const {
+        emailNotifications,
+        pushNotifications,
+        marketingEmails,
+    } = req.body ?? {};
+
+    const preferences = {
+        emailNotifications,
+        pushNotifications,
+        marketingEmails,
+    };
+
+    for (const [key, value] of Object.entries(preferences)) {
+        if (
+            value !== undefined &&
+            typeof value !== "boolean"
+        ) {
+            return res.status(400).json({
+                message: `${key} must be a boolean`,
+            });
+        }
+    }
+
+    next();
+};

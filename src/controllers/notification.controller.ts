@@ -3,7 +3,8 @@ import { createNotification, getUserNotifications, markNotificationAsRead } from
 import { AuthenticatedRequest } from "../middleware/auth.middleware";
 
 export const create = async (
-    req: AuthenticatedRequest, res: Response
+    req: AuthenticatedRequest,
+    res: Response
 ) => {
     try {
         const {title, message, type} = req.body ?? {};
@@ -13,12 +14,6 @@ export const create = async (
         if (!userId) {
             return res.status(401).json({
                 message: "Authenticated user not found",
-            });
-        }
-
-        if (!title || !message) {
-            return res.status(400).json({
-                message: "Title and message are required",
             });
         }
 

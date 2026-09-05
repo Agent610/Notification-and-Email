@@ -1,22 +1,23 @@
-import {Request, Response } from "express";
+import { Response } from "express";
+import { AuthenticatedRequest } from "../middleware/auth.middleware";
 import { findUserById } from "../services/user.service";
 
 export const getProfile = async (
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
 ) => {
     try {
-        const {userId} = req.params;
+        const userId = req.user?.id;
 
-        if(typeof userId !== "string") {
-            return res.status(400).json({
-                message: "Invalid userId",
+        if (!userId) {
+            return res.status(401).json({
+                message: "Authenticated user not found",
             });
         }
 
         const user = await findUserById(userId);
 
-        if(!user) {
+        if (!user) {
             return res.status(404).json({
                 message: "User not found",
             });
@@ -24,7 +25,7 @@ export const getProfile = async (
 
         return res.status(200).json({
             user: {
-                id: user.id,
+                id: user._id,
                 email: user.email,
             },
         });

@@ -19,6 +19,13 @@ app.get("/", (_req, res) => {
     });
 });
 
+app.get("/health", (_req,res) => {
+    res.status(200).json({
+        status:"ok",
+        message: "Notification & Email API is healthy",
+    });
+})
+
 app.use("/api/emails", emailRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/notifications", notificationRoutes);

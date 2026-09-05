@@ -5,10 +5,12 @@ export const createUser = async (
     email: string,
     password: string
 ) => {
+    const normalizedEmail = email.trim().toLowerCase();
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await UserModel.create({
-        email,
+        email: normalizedEmail,
         password: hashedPassword,
     });
 
@@ -24,7 +26,11 @@ export const findUserById = async (
 export const findUserByEmail = async (
     email: string
 ) => {
-    return UserModel.findOne({ email });
+    const normalizedEmail = email.trim().toLowerCase();
+
+    return UserModel.findOne({
+        email: normalizedEmail,
+    });
 };
 
 export const verifyPassword = async (

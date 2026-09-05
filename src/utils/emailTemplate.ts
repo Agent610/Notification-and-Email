@@ -1,10 +1,25 @@
 import fs from "fs";
 import path from "path";
 
+const allowedTemplates = [
+    "welcome.html",
+    "notification.html",
+    "password-reset.html",
+    "catering-confirmation.html",
+] as const;
+
 export const loadEmailTemplate = (
     templateName: string,
     variables: Record<string, string>
 ): string => {
+    if (
+        !allowedTemplates.includes(
+            templateName as (typeof allowedTemplates)[number]
+        )
+    ) {
+        throw new Error("Invalid email template");
+    }
+
     const templatePath = path.join(
         __dirname,
         "..",
@@ -27,4 +42,4 @@ export const loadEmailTemplate = (
     );
 
     return template;
-}
+};
